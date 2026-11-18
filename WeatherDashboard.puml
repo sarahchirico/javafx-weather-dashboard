@@ -1,0 +1,84 @@
+@startuml
+
+class GeocodingService {
+    + searchLocations(query: String): List<Location>
+    - parseLocations(jsonData: String): List<Location>
+}
+
+class Location {
+    - name: String
+    - region: String
+    - country: String
+    - latitude: double
+    - longitude: double
+    - timezone: String
+}
+
+class WeatherService {
+    + fetchForecast(location: Location): WeatherForecast
+    - parseForecast(json: String, location: Location): WeatherForecast
+}
+
+class WeatherForecast {
+    - location: Location
+    - currentWeather: CurrentWeather
+    - dailyForecasts: List<DailyForecast>
+}
+
+class CurrentWeather {
+    - condition: WeatherCondition
+    - temperature: double
+    - isDay: boolean
+}
+
+class DailyForecast {
+    - date: LocalDate
+    - condition: WeatherCondition
+    - highTemperature: double
+    - lowTemperature: double
+    - precipitationProbability: int
+    - hourlyForecasts: List<HourlyForecast>
+}
+
+class HourlyForecast {
+    - time: LocalDateTime
+    - temperature: double
+    - precipitationProbability: int
+    - condition: WeatherCondition
+}
+
+class WeatherConditionMapper {
+    + mapCode(code: int): WeatherCondition
+}
+
+class TemperatureConverter {
+    + toCelsius(fahrenheit: double): double
+    + toFahrenheit(celsius: double): double
+}
+
+enum WeatherCondition {
+    CLEAR
+    PARTLY_CLOUDY
+    CLOUDY
+    FOG
+    DRIZZLE
+    RAIN
+    SNOW
+    THUNDERSTORM
+}
+
+GeocodingService ..> Location : returns
+WeatherService ..> Location : uses
+WeatherService ..> WeatherForecast : creates
+WeatherService ..> WeatherConditionMapper : uses
+
+WeatherForecast --> "1" Location
+WeatherForecast *-- "1" CurrentWeather
+WeatherForecast *-- "7" DailyForecast
+DailyForecast -- "0.." HourlyForecast
+
+CurrentWeather --> WeatherCondition
+DailyForecast --> WeatherCondition
+HourlyForecast --> WeatherCondition
+
+@enduml

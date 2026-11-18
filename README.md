@@ -1,2 +1,2 @@
 # javafx-weather-dashboard
-A desktop weather dashboard built with JavaFX featuring location search and weather forecast via Open-Meteo APIs.
+A desktop weather dashboard built with JavaFX. This application allows users to search for a location and view current weather conditions, along with a 7-day forecast or an hourly forecast for an individual day. This application also features weather animations and icons corresponding to current weather conditions.
