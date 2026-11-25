@@ -17,11 +17,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Handles retrieving and processing weather forecast data from the Open-Meteo Weather API.
+ */
 public class WeatherService {
     private static final String API_URL = "https://api.open-meteo.com/v1/forecast";
     private final HttpClient httpClient;
     private final WeatherConditionMapper conditionMapper;
 
+    /**
+     * Constructs a WeatherService and initializes the HTTP client and weather condition mapper.
+     */
     public WeatherService() {
         this.httpClient = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(10))
@@ -29,6 +35,15 @@ public class WeatherService {
         this.conditionMapper = new WeatherConditionMapper();
     }
 
+    /** 
+     * Fetches the current weather and 7-day forecast for the specified location.
+     * 
+     * @param location the location for which to retrieve weather data
+     * @return a WeatherForecast containing current weather and daily forecasts
+     * @throws IllegalArgumentException if the specified location is null
+     * @throws IOException if the API request fails or the response cannot be processed
+     * @throws InterruptedException if the HTTP request is interrupted
+     */
     public WeatherForecast fetchForecast(Location location) throws IOException, InterruptedException {
         if (location == null) {
             throw new IllegalArgumentException("A selected location is required.");
@@ -53,6 +68,14 @@ public class WeatherService {
         return parseForecast(response.body(), location);
     }
 
+    /** 
+     * Parses the JSON weather response and creates a WeatherForecast object.
+     * 
+     * @param json the JSON response received from the weather API
+     * @param location the location associated with the forecast
+     * @return a WeatherForecast containing the parsed weather information
+     * @throws IOException if the response contains invalid or incomplete weather data
+     */
     private WeatherForecast parseForecast(String json, Location location) throws IOException {
         try {
             JsonObject root = JsonParser.parseString(json).getAsJsonObject();
@@ -119,6 +142,14 @@ public class WeatherService {
         }
     }
 
+    /** 
+     * Retrieves a required JSON object from the specified JSON object.
+     * 
+     * @param object the JSON object to retrieve data from
+     * @param key the key associated with the required JSON object
+     * @return the requested JSON object
+     * @throws IOException if the key is missing or does not contain a JSON object
+     */
     private static JsonObject requiredObject(JsonObject object, String key) throws IOException {
         JsonElement element = object.get(key);
         if (element == null || !element.isJsonObject()) {
@@ -127,6 +158,14 @@ public class WeatherService {
         return element.getAsJsonObject();
     }
 
+    /** 
+     * Retrieves a required JSON array from the specified JSON object.
+     * 
+     * @param object the JSON object to retrieve data from
+     * @param key the key associated with the required JSON array
+     * @return the requested JSON array
+     * @throws IOException if the key is missing or does not contain a JSON array
+     */
     private static JsonArray requiredArray(JsonObject object, String key) throws IOException {
         JsonElement element = object.get(key);
         if (element == null || !element.isJsonArray()) {
@@ -135,6 +174,14 @@ public class WeatherService {
         return element.getAsJsonArray();
     }
 
+    /** 
+     * Retrieves a required integer value from the specified JSON object.
+     * 
+     * @param object the JSON object to retrieve data from
+     * @param key the key associated with the required integer
+     * @return the requested integer value
+     * @throws IOException if the key is missing or contains a null value
+     */
     private static int requiredInt(JsonObject object, String key) throws IOException {
         JsonElement value = object.get(key);
         if (value == null || value.isJsonNull()) {
@@ -143,6 +190,14 @@ public class WeatherService {
         return value.getAsInt();
     }
 
+    /** 
+     * Retrieves a required double value from the specified JSON object.
+     * 
+     * @param object the JSON object to retrieve data from
+     * @param key the key associated with the required double
+     * @return the requested double value
+     * @throws IOException if the key is missing or contains a null value
+     */
     private static double requiredDouble(JsonObject object, String key) throws IOException {
         JsonElement value = object.get(key);
         if (value == null || value.isJsonNull()) {
@@ -151,6 +206,14 @@ public class WeatherService {
         return value.getAsDouble();
     }
 
+    /** 
+     * Retrieves an optional string value from the specified JSON object.
+     * 
+     * @param object the JSON object to retrieve data from
+     * @param key the key associated with the optional string
+     * @param defaultValue the value to return if the key is missing or null
+     * @return the requested string or the default value
+     */
     private static String optionalString(JsonObject object, String key, String defaultValue) {
         JsonElement element = object.get(key);
         return element == null || element.isJsonNull() ? defaultValue : element.getAsString();

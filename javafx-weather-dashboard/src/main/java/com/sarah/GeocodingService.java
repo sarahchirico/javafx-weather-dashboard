@@ -16,16 +16,31 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Handles retrieving and processing location data from the Open-Meteo Geocoding API.
+ */
 public class GeocodingService {
     private static final String API_URL = "https://geocoding-api.open-meteo.com/v1/search";
     private final HttpClient httpClient;
 
+    /**
+     * Constructs a GeocodingService and initializes and HTTP client with a connection timeout.
+     */
     public GeocodingService() {
         this.httpClient = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(10))
                 .build();
     }
 
+    /** 
+     * Searches for locations matching the specified query using the Open-Meteo Geocoding API.
+     * 
+     * @param query the name of the location to search for
+     * @return a list of matching Location objects
+     * @throws IllegalArgumentException if the search query is null or blank
+     * @throws IOException if the API request fails or the response cannot be processed
+     * @throws InterruptedException if the HTTP request is interrupted
+     */
     public List<Location> searchLocations(String query) throws IOException, InterruptedException {
         if (query == null || query.trim().isEmpty()) {
             throw new IllegalArgumentException("Search query must not be blank.");
@@ -45,6 +60,13 @@ public class GeocodingService {
         return parseLocations(response.body());
     }
 
+    /** 
+     * Parses the JSON response from the Geocoding API and converts the results into Location objects.
+     * 
+     * @param jsonData the JSON response received from the API
+     * @return a list of Location objects extracted from the response
+     * @throws IOException if the reponse contains invalid or missing location data
+     */
     private List<Location> parseLocations(String jsonData) throws IOException {
         try {
             JsonObject root = JsonParser.parseString(jsonData).getAsJsonObject();
@@ -81,6 +103,14 @@ public class GeocodingService {
         }
     }
 
+    /** 
+     * Retrieves a required String value from a JSON object.
+     * 
+     * @param object the JSON object containing the requested value
+     * @param key the name of the JSON property to retrieve
+     * @return the requested String value
+     * @throws IOException if the property is missing or empty
+     */
     private static String requiredString(JsonObject object, String key) throws IOException {
         String value = optionalString(object, key, null);
         if (value == null || value.isEmpty()) {
@@ -89,11 +119,27 @@ public class GeocodingService {
         return value;
     }
 
+    /** 
+     * Retrieves an optional String value from a JSON object.
+     * 
+     * @param object the JSON object containing the requested value
+     * @param key the name of the JSON property to retrieve
+     * @param defaultValue the value to return if the property is missing or null
+     * @return the requested String value or the default value
+     */
     private static String optionalString(JsonObject object, String key, String defaultValue) {
         JsonElement element = object.get(key);
         return element == null || element.isJsonNull() ? defaultValue : element.getAsString();
     }
 
+    /** 
+     * Retrieves a required numeric value from a JSON object.
+     * 
+     * @param object the JSON object containing the requested value
+     * @param key the name of the JSON property to retrieve
+     * @return the requested numeric value as a double
+     * @throws IOException if the property is missing or null
+     */
     private static double requiredDouble(JsonObject object, String key) throws IOException {
         JsonElement value = object.get(key);
         if (value == null || value.isJsonNull()) {
