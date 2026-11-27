@@ -1,9 +1,7 @@
 package com.sarah;
 
 /**
- * Constructs a TemperatureUnit with the specified symbol.
- * 
- * @param symbol the abbreviation for the temperature unit
+ * Represents a temperature unit and its display symbol.
  */
 public enum TemperatureUnit {
     CELSIUS("C"),
@@ -11,6 +9,11 @@ public enum TemperatureUnit {
 
     private final String symbol;
 
+    /**
+     * Constructs a TemperatureUnit with the specified symbol.
+     * 
+     * @param symbol the abbreviation for the temperature unit
+     */
     TemperatureUnit(String symbol) {
         this.symbol = symbol;
     }
