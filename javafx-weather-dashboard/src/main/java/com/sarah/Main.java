@@ -5,21 +5,36 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Scanner;
 
+/**
+ * Provides the console-based interface for the weather application.
+ * Handles user input, location selection, and displaying the weather forecast.
+ */
 public class Main {
     private final GeocodingService geocodingService;
     private final WeatherService weatherService;
     private final TemperatureConverter temperatureConverter;
 
+    /**
+     * Initializes the services used by the weather application.
+     */
     public Main() {
         this.geocodingService = new GeocodingService();
         this.weatherService = new WeatherService();
         this.temperatureConverter = new TemperatureConverter();
     }
 
+    /**
+     * Starts the weather application.
+     * 
+     * @param args command-line arguments
+     */
     public static void main(String[] args) {
         new Main().run();
     }
 
+    /**
+     * Runs the main application loop, allowing users to search to locations and retrieve their weather forecasts.
+     */
     private void run() {
         try (Scanner scanner = new Scanner(System.in)) {
             while (true) {
@@ -58,6 +73,13 @@ public class Main {
         }
     }
 
+    /**
+     * Displays the forecast menu and allows users to change temperature units, search for another location, or quit the application.
+     * 
+     * @param scanner the scanner used to read user input
+     * @param forecast the weather forecast to display
+     * @return true if the user chooses to search again, false if the user quits
+     */
     private boolean displayForecastMenu(Scanner scanner, WeatherForecast forecast) {
         TemperatureUnit unit = TemperatureUnit.CELSIUS;
         displayForecast(forecast, unit);
@@ -84,6 +106,13 @@ public class Main {
         }
     }
 
+    /**
+     * Prompts the user to select a location from the matching search results.
+     * 
+     * @param scanner the scanner used to read user input
+     * @param locations the list of matching locations
+     * @return the location selected by the user
+     */
     private static Location selectLocation(Scanner scanner, List<Location> locations) {
         while (true) {
             System.out.print("Select a location by number: ");
@@ -102,6 +131,12 @@ public class Main {
         }
     }
 
+    /**
+     * Displays the current weather and daily and hourly forecasts using the specified temperature unit.
+     * 
+     * @param forecast the weather forecast to display
+     * @param unit the temperature unit used to display the temperatures
+     */
     private void displayForecast(WeatherForecast forecast, TemperatureUnit unit) {
         CurrentWeather current = forecast.getCurrentWeather();
         System.out.printf(Locale.ROOT, "%nCurrent: %s, %s%n",
@@ -124,6 +159,13 @@ public class Main {
         }
     }
 
+    /**
+     * Formats a temperature in Celsius into the specified temperature unit.
+     * 
+     * @param celsius the temperature in Celsius
+     * @param unit the temperature unit for the formatted result
+     * @return the formatted temperature with its unit symbol
+     */
     private String formatTemperature(double celsius, TemperatureUnit unit) {
         double value = unit == TemperatureUnit.FAHRENHEIT
                 ? temperatureConverter.toFahrenheit(celsius)

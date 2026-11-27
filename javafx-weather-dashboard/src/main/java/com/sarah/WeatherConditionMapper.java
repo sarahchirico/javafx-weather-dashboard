@@ -1,6 +1,16 @@
 package com.sarah;
 
+/**
+ * Maps WMO weather codes to the corresponding WeatherCondition values.
+ */
 public class WeatherConditionMapper {
+    /** 
+     * Converts a WMO weather code into a WeatherCondition value.
+     * 
+     * @param code the WMO weather code returned by the weather API
+     * @return the corresponding WeatherCondition
+     * @throws IllegalArgumentException if the weather code is unsupported
+     */
     public WeatherCondition mapCode(int code) {
         if (code == 0) {
             return WeatherCondition.CLEAR;
